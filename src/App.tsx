@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Navigation } from './components/Navigation';
 import { QuestionEditor } from './components/QuestionEditor';
 import { ImportExport } from './components/ImportExport';
+import { AIAnalysisButton } from './components/AIAnalysisButton';
 import { InfoButton } from './components/InfoButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { MobileProgress } from './components/MobileProgress';
@@ -59,19 +60,21 @@ function App() {
   const section = allSections.find((s) => s.id === currentSection);
   const category = section?.categories.find((c) => c.id === currentCategory);
   const questions = category?.questions || [];
+  const [isScrolling, setIsScrolling] = useState(false);
   
   const lastQuestionRef = useInView({
-    threshold: 1,
-    rootMargin: '0px 0px -100px 0px',
+    threshold: 0.8,
+    rootMargin: '0px 0px -300px 0px',
     delay: 800,
     onChange: (inView) => {
-      if (inView && questions.length > 0) {
+      if (inView && questions.length > 0 && !isScrolling) {
         handleNextCategory(allSections);
       }
     }
   });
 
   const handleScroll = (direction: 'prev' | 'next') => {
+    setIsScrolling(true);
     const fn = direction === 'next' ? handleNextCategory : handlePrevCategory;
     fn(allSections);
     
@@ -80,6 +83,7 @@ function App() {
       const categoryDivider = document.getElementById('category-divider');
       if (categoryDivider) {
         categoryDivider.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => setIsScrolling(false), 1000); // Reset after animation
       }
     });
   };
@@ -298,10 +302,28 @@ function App() {
                 onPrev={() => handlePrevCategory(allSections)}
               />
             ))}
+                        <div className="flex items-center justify-between mt-8">
+              <button
+                onClick={() => handleScroll('prev')}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 
+                         hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                disabled={currentSection === t.sections[0].id && currentCategory === t.sections[0].categories[0].id}
+              >
+                ← Previous Category
+              </button>
+              <button
+                onClick={() => handleScroll('next')}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 
+                         hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              >
+                Next Category →
+              </button>
+            </div>
           </div>
         </div>
         <MobileProgress progress={progress} />
       </main>
+      <AIAnalysisButton />
     </div>
   );
 }
