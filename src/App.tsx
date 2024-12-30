@@ -9,6 +9,7 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 import { useNavigation } from './hooks/useNavigation';
 import { useLanguage } from './hooks/useLanguage';
+import { useInView } from './hooks/useInView';
 import type { ReflectionData, Progress, Section, Category, Question } from './types';
 
 const initialData: ReflectionData = {
@@ -55,11 +56,33 @@ function App() {
     };
   }, [data.answers]);
 
-  const currentQuestions = useMemo(() => {
-    const section = allSections.find((s) => s.id === currentSection);
-    const category = section?.categories.find((c) => c.id === currentCategory);
-    return category?.questions || [];
-  }, [currentSection, currentCategory, allSections]);
+  const section = allSections.find((s) => s.id === currentSection);
+  const category = section?.categories.find((c) => c.id === currentCategory);
+  const questions = category?.questions || [];
+  
+  const lastQuestionRef = useInView({
+    threshold: 1,
+    rootMargin: '0px 0px -100px 0px',
+    delay: 800,
+    onChange: (inView) => {
+      if (inView && questions.length > 0) {
+        handleNextCategory(allSections);
+      }
+    }
+  });
+
+  const handleScroll = (direction: 'prev' | 'next') => {
+    const fn = direction === 'next' ? handleNextCategory : handlePrevCategory;
+    fn(allSections);
+    
+    // Ensure the category divider is visible after navigation
+    requestAnimationFrame(() => {
+      const categoryDivider = document.getElementById('category-divider');
+      if (categoryDivider) {
+        categoryDivider.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  };
 
   const handleAddSection = (title: string) => {
     const newSection: Section = {
@@ -236,10 +259,39 @@ function App() {
         </div>
         <div className="max-w-full lg:max-w-3xl mx-auto mt-20 px-2 sm:px-4 lg:px-8 pb-6">
           <div className="space-y-6">
-            {currentQuestions.map((question) => (
+            <div className="flex items-center justify-between mb-8">
+              <button
+                onClick={() => handleScroll('prev')}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 
+                         hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                disabled={currentSection === t.sections[0].id && currentCategory === t.sections[0].categories[0].id}
+              >
+                ← Previous Category
+              </button>
+              <button
+                onClick={() => handleScroll('next')}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 
+                         hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              >
+                Next Category →
+              </button>
+            </div>
+            <div className="relative py-4 mb-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+              </div>
+              <div id="category-divider" className="relative flex justify-center">
+                <span className="px-3 bg-gradient-to-br from-[var(--gradient-start)] to-[var(--gradient-end)] 
+                              text-sm text-gray-500 dark:text-gray-400">
+                  {category?.title}
+                </span>
+              </div>
+            </div>
+            {questions.map((question, index) => (
               <QuestionEditor
                 key={question.id}
                 question={question}
+                ref={index === questions.length - 1 ? lastQuestionRef : null}
                 answer={data.answers[question.id]}
                 onSave={answer => handleSaveAnswer(question.id, answer)}
                 onNext={() => handleNextCategory(allSections)}
