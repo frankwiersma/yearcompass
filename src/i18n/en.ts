@@ -4,6 +4,32 @@ import { sections } from '../data/questions';
 export const en: Translations = {
   sections,
   ui: {
+    aiAnalysis: {
+      button: 'AI Analysis',
+      title: 'AI Year Review Analysis',
+      loading: 'Generating analysis...',
+      error: {
+        title: 'Analysis Error',
+        tryAgain: 'Try Again',
+        minimum: 'Please fill in at least 10% of the questions before generating an analysis.',
+        failed: 'Failed to generate analysis: ',
+        pleaseRetry: 'Please try again.',
+      },
+      incomplete: {
+        title: 'Fill More Questions',
+        description: 'Fill in at least 10% of the questions to generate an AI analysis.',
+        progress: 'Current progress: ',
+      },
+      actions: {
+        copyText: 'Copy Text',
+        downloadPDF: 'Download PDF',
+        generatingPDF: 'Generating PDF...',
+      },
+      toast: {
+        pdfSuccess: 'PDF generated successfully!',
+        copySuccess: 'Text copied to clipboard!',
+      },
+    },
     navigation: {
       progress: 'Progress',
       questionsAnswered: 'questions answered',

@@ -49,5 +49,31 @@ export type Translations = {
       reset: string;
       confirmReset: string;
     };
+    aiAnalysis: {
+      button: string;
+      title: string;
+      loading: string;
+      error: {
+        title: string;
+        tryAgain: string;
+        minimum: string;
+        failed: string;
+        pleaseRetry: string;
+      };
+      incomplete: {
+        title: string;
+        description: string;
+        progress: string;
+      };
+      actions: {
+        copyText: string;
+        downloadPDF: string;
+        generatingPDF: string;
+      };
+      toast: {
+        pdfSuccess: string;
+        copySuccess: string;
+      };
+    };
   };
 };

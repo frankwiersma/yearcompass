@@ -4,6 +4,32 @@ import { sectionsNL } from '../data/questions-nl';
 export const nl: Translations = {
   sections: sectionsNL,
   ui: {
+    aiAnalysis: {
+      button: 'AI Analyse',
+      title: 'AI Jaaroverzicht Analyse',
+      loading: 'Analyse wordt gegenereerd...',
+      error: {
+        title: 'Analyse Fout',
+        tryAgain: 'Probeer Opnieuw',
+        minimum: 'Vul eerst ten minste 10% van de vragen in voordat je een analyse genereert.',
+        failed: 'Analyse genereren mislukt: ',
+        pleaseRetry: 'Probeer het opnieuw.',
+      },
+      incomplete: {
+        title: 'Vul Meer Vragen In',
+        description: 'Vul ten minste 10% van de vragen in om een AI-analyse te genereren.',
+        progress: 'Huidige voortgang: ',
+      },
+      actions: {
+        copyText: 'Tekst Kopiëren',
+        downloadPDF: 'Download PDF',
+        generatingPDF: 'PDF wordt gegenereerd...',
+      },
+      toast: {
+        pdfSuccess: 'PDF succesvol gegenereerd!',
+        copySuccess: 'Tekst gekopieerd naar klembord!',
+      },
+    },
     navigation: {
       progress: 'Voortgang',
       questionsAnswered: 'vragen beantwoord',
