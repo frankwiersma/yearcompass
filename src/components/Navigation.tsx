@@ -135,8 +135,9 @@ export function Navigation({
               style={{ width: `${progress.percentageComplete}%` }}
             />
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            {progress.answeredQuestions} {t.ui.navigation.questionsAnswered} ({progress.totalQuestions})
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 flex items-center justify-between">
+            <span>{progress.answeredQuestions} {t.ui.navigation.questionsAnswered} ({progress.totalQuestions})</span>
+            <span className="font-medium">{progress.percentageComplete}%</span>
           </p>
         </div>
         <button

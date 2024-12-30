@@ -1,15 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { Navigation } from './components/Navigation';
 import { QuestionEditor } from './components/QuestionEditor';
-import { ImportExport } from './components/ImportExport';
-import { InfoButton } from './components/InfoButton';
-import { ThemeToggle } from './components/ThemeToggle';
+import { AIAnalysisButton } from './components/AIAnalysisButton';
 import { MobileProgress } from './components/MobileProgress';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 import { useNavigation } from './hooks/useNavigation';
 import { useLanguage } from './hooks/useLanguage';
 import { useInView } from './hooks/useInView';
+import { useProgress } from './contexts/ProgressContext';
 import type { ReflectionData, Progress, Section, Category, Question } from './types';
 
 const initialData: ReflectionData = {
@@ -18,9 +17,9 @@ const initialData: ReflectionData = {
 };
 
 function App() {
-  const [data, setData, resetData] = useLocalStorage<ReflectionData>('reflection-data', initialData);
   const [customSections, setCustomSections, resetCustomSections] = useLocalStorage<Section[]>('custom-sections', []);
   const { t } = useLanguage();
+  const { progress, data, updateData, resetData } = useProgress();
   
   const {
     currentSection,
@@ -33,28 +32,6 @@ function App() {
   useKeyboardNavigation(t.sections, currentSection, currentCategory, handleNavigate);
 
   const allSections = useMemo(() => [...t.sections, ...customSections], [t.sections, customSections]);
-
-  const progress: Progress = useMemo(() => {
-    const totalQuestions = allSections.reduce(
-      (total, section) =>
-        total +
-        section.categories.reduce(
-          (catTotal, category) => catTotal + category.questions.length,
-          0
-        ),
-      0
-    );
-
-    const answeredQuestions = Object.values(data.answers).filter(
-      answer => answer.answer && answer.answer.trim() !== ''
-    ).length;
-
-    return {
-      totalQuestions,
-      answeredQuestions,
-      percentageComplete: Math.round((answeredQuestions / totalQuestions) * 100),
-    };
-  }, [data.answers]);
 
   const section = allSections.find((s) => s.id === currentSection);
   const category = section?.categories.find((c) => c.id === currentCategory);
@@ -155,24 +132,23 @@ function App() {
     const question = category?.questions.find((q) => q.id === questionId);
 
     if (!question) return;
-
+    const newData = { ...data };
+    
     // Don't save empty answers
     if (!answer.trim()) {
-      const newAnswers = { ...data.answers };
-      delete newAnswers[questionId];
-      setData({
-        ...data,
+      delete newData.answers[questionId];
+      updateData({
+        ...newData,
         lastSaved: new Date().toISOString(),
-        answers: newAnswers,
       });
       return;
     }
 
-    setData({
-      ...data,
+    updateData({
+      ...newData,
       lastSaved: new Date().toISOString(),
       answers: {
-        ...data.answers,
+        ...newData.answers,
         [questionId]: {
           id: questionId,
           question: question.text,
@@ -186,19 +162,13 @@ function App() {
   };
 
   const handleImport = (importedData: ReflectionData) => {
-    setData(importedData);
+    updateData(importedData);
   };
 
   const handleReset = () => {
     // First reset the data to initial state
     resetData();
     resetCustomSections();
-    
-    // Force clear all answers
-    setData({
-      answers: {},
-      lastSaved: new Date().toISOString(),
-    });
   };
 
   const handleDeleteSection = (sectionId: string) => {
@@ -301,7 +271,9 @@ function App() {
                 onPrev={() => handlePrevCategory(allSections)}
               />
             ))}
-                        <div className="flex items-center justify-between mt-8">
+
+            <div className="flex items-center justify-between mt-8">
+
               <button
                 onClick={() => handleScroll('prev')}
                 className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 
@@ -322,6 +294,7 @@ function App() {
         </div>
         <MobileProgress progress={progress} />
       </main>
+      <AIAnalysisButton />
     </div>
   );
 }

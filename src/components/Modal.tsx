@@ -7,9 +7,10 @@ type Props = {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  className?: string;
 };
 
-export function Modal({ isOpen, onClose, title, children }: Props) {
+export function Modal({ isOpen, onClose, title, children, className = '' }: Props) {
   if (!isOpen) return null;
 
   return createPortal(
@@ -19,8 +20,8 @@ export function Modal({ isOpen, onClose, title, children }: Props) {
         onClick={onClose}
       />
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full p-8 relative
-                      animate-fade-in">
+        <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full p-8 relative
+                      animate-fade-in ${className}`}>
           <button
             onClick={onClose}
             className="absolute top-6 right-6 text-gray-400 hover:text-gray-500 
