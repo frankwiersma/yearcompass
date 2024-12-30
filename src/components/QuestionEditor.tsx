@@ -23,17 +23,20 @@ export const QuestionEditor = forwardRef<HTMLDivElement, Props>(({
   const [content, setContent] = useState(answer?.answer || '');
   const debouncedContent = useDebounce(content, 1000);
   const { t } = useLanguage();
+  const prevAnswerRef = React.useRef(answer?.answer);
   
   // Reset content when question or answer changes
   useEffect(() => {
-    const newContent = answer?.answer || '';
-    setContent(newContent);
-  }, [question.id, answer]);
+    if (answer?.answer !== prevAnswerRef.current) {
+      setContent(answer?.answer || '');
+      prevAnswerRef.current = answer?.answer;
+    }
+  }, [question.id, answer?.answer]);
   
   // Handle saving changes
   useEffect(() => {
-    if (debouncedContent !== answer?.answer && debouncedContent !== '') {
-      onSave(content);
+    if (debouncedContent && debouncedContent !== answer?.answer) {
+      onSave(debouncedContent);
     }
   }, [debouncedContent, answer?.answer, onSave]);
 
