@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Question, Answer } from '../types';
 import { useDebounce } from '../hooks/useDebounce';
 import { BookOpen } from 'lucide-react';
@@ -13,7 +13,13 @@ type Props = {
   onPrev?: () => void;
 };
 
-export function QuestionEditor({ question, answer, onSave, onNext, onPrev }: Props) {
+export const QuestionEditor = forwardRef<HTMLDivElement, Props>(({ 
+  question, 
+  answer, 
+  onSave, 
+  onNext, 
+  onPrev 
+}, ref) => {
   const [content, setContent] = useState(answer?.answer || '');
   const debouncedContent = useDebounce(content, 1000);
   const { t } = useLanguage();
@@ -33,7 +39,9 @@ export function QuestionEditor({ question, answer, onSave, onNext, onPrev }: Pro
 
   return (
     <div className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg
-                    transition-all duration-300 hover:shadow-xl">
+                    transition-all duration-300 hover:shadow-xl"
+         ref={ref}
+    >
       <div className="flex items-start gap-4">
         <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
         <div className="flex-1">
@@ -54,7 +62,7 @@ export function QuestionEditor({ question, answer, onSave, onNext, onPrev }: Pro
       </div>
     </div>
   );
-}
+});
 
 function getPlaceholder(question: Question, t: Translations): string {
   // Extract key phrases from the question to create contextual examples

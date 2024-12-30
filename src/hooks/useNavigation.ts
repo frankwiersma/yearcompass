@@ -1,11 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Section } from '../types';
 import { useLanguage } from './useLanguage';
+import { useLocalStorage } from './useLocalStorage';
 
 export function useNavigation() {
   const { t } = useLanguage();
-  const [currentSection, setCurrentSection] = useState(t.sections[0].id);
-  const [currentCategory, setCurrentCategory] = useState(t.sections[0].categories[0].id);
+  const [currentSection, setCurrentSection] = useLocalStorage('current-section', t.sections[0].id);
+  const [currentCategory, setCurrentCategory] = useLocalStorage('current-category', t.sections[0].categories[0].id);
 
   // Reset navigation when language changes to ensure valid IDs
   useEffect(() => {
@@ -26,6 +27,22 @@ export function useNavigation() {
   const handleNavigate = useCallback((sectionId: string, categoryId: string) => {
     setCurrentSection(sectionId);
     setCurrentCategory(categoryId);
+
+    // Scroll to category after state updates
+    requestAnimationFrame(() => {
+      const categoryDivider = document.getElementById('category-divider');
+      const mainContent = document.querySelector('main');
+      if (categoryDivider && mainContent) {
+        const headerOffset = 100;
+        const elementPosition = categoryDivider.offsetTop;
+        const scrollPosition = elementPosition - headerOffset;
+
+        mainContent.scrollTo({
+          top: scrollPosition,
+          behavior: 'smooth'
+        });
+      }
+    });
   }, []);
 
   const handleNextCategory = useCallback((allSections: Section[]) => {
