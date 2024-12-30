@@ -81,7 +81,7 @@ export function InfoButton() {
             </p>
             <div className="space-y-2">
               <a
-                href="https://yearcompass.com"
+                href="https://yearcompass.osint-app.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 
@@ -91,7 +91,7 @@ export function InfoButton() {
                 Visit YearCompass
               </a>
               <a
-                href="https://github.com/yearcompass/yearcompass"
+                href="https://github.com/frankwiersma/yearcompass"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 
@@ -101,7 +101,7 @@ export function InfoButton() {
                 Open Source
               </a>
               <a
-                href="https://yearcompass.com/support"
+                href="https://yearcompass.osint-app.com/support"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 
@@ -117,7 +117,7 @@ export function InfoButton() {
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Made By</h3>
             <div className="space-y-2">
               <a
-                href="https://twitter.com/frankwiersma_"
+                href="https://x.com/frankwiersma_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 
