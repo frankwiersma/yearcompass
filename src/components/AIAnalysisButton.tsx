@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Download, AlertCircle } from 'lucide-react';
+import { Bot, Download, AlertCircle, Copy } from 'lucide-react';
 import { Modal } from './Modal';
 import { AIReport } from './AIReport';
 import { Toast } from './Toast';
 import { LoadingSpinner } from './LoadingSpinner';
 import { generatePDF } from '../utils/pdf';
 import { generateYearAnalysis } from '../utils/gemini';
-import { useProgress } from '../hooks/useProgress';
-import type { ReflectionData } from '../types';
+import { useProgress } from '../contexts/ProgressContext'; // Update this import
+import { useLanguage } from '../hooks/useLanguage';
 
 export function AIAnalysisButton() {
+  const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [report, setReport] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const progress = useProgress();
-  const { percentageComplete, data } = progress;
+  const [toastMessage, setToastMessage] = useState('');
+  const { progress, data } = useProgress(); // Use ProgressContext
+  const { percentageComplete } = progress;
 
   // Reset report when progress changes
   useEffect(() => {
@@ -26,9 +28,10 @@ export function AIAnalysisButton() {
     }
   }, [percentageComplete, report]);
 
+
   const handleAnalyze = async () => {
     if (percentageComplete < 10) {
-      setError('Please complete at least 10% of the questions before generating an analysis.');
+      setError(t.ui.aiAnalysis.error.minimum);
       return;
     }
 
@@ -42,9 +45,9 @@ export function AIAnalysisButton() {
       }
       setReport(analysis);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate analysis';
+      const errorMessage = error instanceof Error ? error.message : t.ui.aiAnalysis.error.failed;
       console.error('Error generating analysis:', errorMessage);
-      setError(`Failed to generate analysis: ${errorMessage}. Please try again.`);
+      setError(`${t.ui.aiAnalysis.error.failed}${errorMessage}. ${t.ui.aiAnalysis.error.pleaseRetry}`);
     } finally {
       setIsAnalyzing(false);
     }
@@ -59,11 +62,26 @@ export function AIAnalysisButton() {
       // Wait for any images to load
       await new Promise(resolve => setTimeout(resolve, 500));
       await generatePDF(element);
+      setToastMessage(t.ui.aiAnalysis.toast.pdfSuccess);
       setShowToast(true);
     } catch (error) {
       console.error('Failed to generate PDF:', error);
     } finally {
       setIsGeneratingPDF(false);
+    }
+  };
+
+  const handleCopyText = async () => {
+    const element = document.getElementById('ai-report');
+    if (!element) return;
+    
+    try {
+      const text = element.innerText;
+      await navigator.clipboard.writeText(text);
+      setToastMessage(t.ui.aiAnalysis.toast.copySuccess);
+      setShowToast(true);
+    } catch (error) {
+      console.error('Failed to copy text:', error);
     }
   };
 
@@ -82,20 +100,20 @@ export function AIAnalysisButton() {
                    shadow-lg hover:shadow-xl transition-all duration-300
                    flex items-center justify-center group z-50
                    hover:scale-105 active:scale-95"
-        aria-label="AI Analysis"
+        aria-label={t.ui.aiAnalysis.button}
       >
         <Bot className="w-6 h-6" />
         <span className="absolute right-full mr-3 px-2 py-1 text-sm font-medium text-white
                         bg-gray-900 rounded opacity-0 group-hover:opacity-100
                         transition-opacity duration-200 whitespace-nowrap">
-          AI Analysis
+          {t.ui.aiAnalysis.button}
         </span>
       </button>
 
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title="AI Year Review Analysis"
+        title={t.ui.aiAnalysis.title}
         className="max-w-4xl"
       >
         <div className="space-y-6">
@@ -103,12 +121,12 @@ export function AIAnalysisButton() {
             <div className="text-center p-6">
               <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4 animate-pulse" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Complete More Questions
+                {t.ui.aiAnalysis.incomplete.title}
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Please complete at least 10% of the questions to generate an AI analysis.
+                {t.ui.aiAnalysis.incomplete.description}
                 <br/>
-                <span className="font-medium">Current progress: {percentageComplete}%</span>
+                <span className="font-medium">{t.ui.aiAnalysis.incomplete.progress}{percentageComplete}%</span>
               </p>
             </div>
           ) : isAnalyzing ? (
@@ -117,16 +135,29 @@ export function AIAnalysisButton() {
             <div className="text-center p-6">
               <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Analysis Error
+                {t.ui.aiAnalysis.error.title}
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 {error}
               </p>
-              <button onClick={handleAnalyze} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Try Again</button>
+              <button 
+                onClick={handleAnalyze} 
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                {t.ui.aiAnalysis.error.tryAgain}
+              </button>
             </div>
           ) : report ? (
             <>
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={handleCopyText}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white
+                           bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                >
+                  <Copy className="w-4 h-4" />
+                  {t.ui.aiAnalysis.actions.copyText}
+                </button>
                 <button
                   onClick={handleDownloadPDF}
                   disabled={isGeneratingPDF}
@@ -137,12 +168,12 @@ export function AIAnalysisButton() {
                   {isGeneratingPDF ? (
                     <>
                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Generating PDF...
+                      {t.ui.aiAnalysis.actions.generatingPDF}
                     </>
                   ) : (
                     <>
                       <Download className="w-4 h-4" />
-                      Download PDF
+                      {t.ui.aiAnalysis.actions.downloadPDF}
                     </>
                   )}
                 </button>
@@ -153,7 +184,7 @@ export function AIAnalysisButton() {
         </div>
       </Modal>
       <Toast
-        message="PDF generated successfully!"
+        message={toastMessage}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />

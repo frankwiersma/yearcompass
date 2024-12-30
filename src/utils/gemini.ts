@@ -78,9 +78,13 @@ ANALYTICAL FRAMEWORK:
 2. Development Cycles (map growth trajectories)
 3. Future Pathways (strategic recommendations)
 4. Integration Points (connections between areas)
-
 INPUT DATA:
 ${JSON.stringify(categorizedAnswers, null, 2)}
+
+LANGUAGE REQUIREMENTS:
+First analyze the input data to determine if the majority of responses are in Dutch.
+If the content is primarily in Dutch, provide the entire analysis output in Dutch.
+If the content is primarily in English, provide the output in English.
 
 OUTPUT REQUIREMENTS:
 
