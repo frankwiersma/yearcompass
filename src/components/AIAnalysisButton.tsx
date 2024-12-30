@@ -6,7 +6,7 @@ import { Toast } from './Toast';
 import { LoadingSpinner } from './LoadingSpinner';
 import { generatePDF } from '../utils/pdf';
 import { generateYearAnalysis } from '../utils/gemini';
-import { useProgress } from '../hooks/useProgress';
+import { useProgress } from '../contexts/ProgressContext'; // Update this import
 import { useLanguage } from '../hooks/useLanguage';
 
 export function AIAnalysisButton() {
@@ -18,8 +18,8 @@ export function AIAnalysisButton() {
   const [error, setError] = useState<string | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const progress = useProgress();
-  const { percentageComplete, data } = progress;
+  const { progress, data } = useProgress(); // Use ProgressContext
+  const { percentageComplete } = progress;
 
   // Reset report when progress changes
   useEffect(() => {
@@ -27,6 +27,7 @@ export function AIAnalysisButton() {
       setReport(null);
     }
   }, [percentageComplete, report]);
+
 
   const handleAnalyze = async () => {
     if (percentageComplete < 10) {
