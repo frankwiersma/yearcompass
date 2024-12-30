@@ -115,10 +115,11 @@ export function Navigation({
 
       <nav className={`fixed inset-y-0 left-0 z-40 w-72 bg-white/80 dark:bg-gray-800/80 
                     backdrop-blur-sm border-r border-gray-200 dark:border-gray-700 
-                    flex flex-col h-screen transition-transform duration-300 ease-in-out
+                    flex flex-col transition-transform duration-300 ease-in-out
                     ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
                     lg:translate-x-0`}>
-        <div className="px-6 pt-20 lg:pt-4">
+        <div className="flex flex-col h-screen">
+          <div className="px-6 pt-20 lg:pt-4">
         <div className="flex items-center gap-3 mb-6">
           <Compass className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           <div>
@@ -179,9 +180,9 @@ export function Navigation({
             </button>
           </div>
         )}
-        </div>
+          </div>
       
-      <div className="flex-1 px-6 overflow-y-auto">
+          <div className="flex-1 px-6 overflow-y-auto">
       {sections.map((section) => (
         <div key={section.id} className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -232,28 +233,29 @@ export function Navigation({
           </ul>
         </div>
       ))}
-      </div>
+          </div>
       
-      {showAddForm && (
-        <AddForm
-          type={showAddForm}
-          sections={sections}
-          currentSection={currentSection}
-          onSubmit={handleFormSubmit}
-          onCancel={() => {
-            setShowAddForm(null);
-            setShowAddButtons(false);
-          }}
-        />
-      )}
-      <div className="mt-auto p-4 border-t border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50">
-        <div className="flex items-center justify-center gap-2">
-          <InfoButton />
-          <LanguageToggle />
-          <ImportExport data={data} onImport={onImport} onReset={onReset} />
-          <ThemeToggle />
-        </div>
-      </div>
+          {showAddForm && (
+            <AddForm
+              type={showAddForm}
+              sections={sections}
+              currentSection={currentSection}
+              onSubmit={handleFormSubmit}
+              onCancel={() => {
+                setShowAddForm(null);
+                setShowAddButtons(false);
+              }}
+            />
+          )}
+          <div className="sticky bottom-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2">
+              <InfoButton />
+              <LanguageToggle />
+              <ImportExport data={data} onImport={onImport} onReset={onReset} />
+              <ThemeToggle />
+            </div>
+          </div>
+         </div>
     </nav>
     </>
   );
