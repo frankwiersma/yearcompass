@@ -59,19 +59,21 @@ function App() {
   const section = allSections.find((s) => s.id === currentSection);
   const category = section?.categories.find((c) => c.id === currentCategory);
   const questions = category?.questions || [];
+  const [isScrolling, setIsScrolling] = useState(false);
   
   const lastQuestionRef = useInView({
-    threshold: 1,
-    rootMargin: '0px 0px -100px 0px',
+    threshold: 0.8,
+    rootMargin: '0px 0px -300px 0px',
     delay: 800,
     onChange: (inView) => {
-      if (inView && questions.length > 0) {
+      if (inView && questions.length > 0 && !isScrolling) {
         handleNextCategory(allSections);
       }
     }
   });
 
   const handleScroll = (direction: 'prev' | 'next') => {
+    setIsScrolling(true);
     const fn = direction === 'next' ? handleNextCategory : handlePrevCategory;
     fn(allSections);
     
@@ -80,6 +82,7 @@ function App() {
       const categoryDivider = document.getElementById('category-divider');
       if (categoryDivider) {
         categoryDivider.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => setIsScrolling(false), 1000); // Reset after animation
       }
     });
   };
@@ -298,7 +301,7 @@ function App() {
                 onPrev={() => handlePrevCategory(allSections)}
               />
             ))}
-            <div className="flex items-center justify-between mt-8">
+                        <div className="flex items-center justify-between mt-8">
               <button
                 onClick={() => handleScroll('prev')}
                 className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 
