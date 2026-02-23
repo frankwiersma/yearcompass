@@ -1,9 +1,12 @@
 import { Section } from '../types';
 
+const CURRENT_YEAR = new Date().getFullYear();
+const PAST_YEAR = CURRENT_YEAR - 1;
+
 export const sections: Section[] = [
   {
     id: 'past-year',
-    title: 'Past Year Reflection (2024)',
+    title: `Past Year Reflection (${PAST_YEAR})`,
     categories: [
       {
         id: 'overall',
@@ -277,7 +280,7 @@ export const sections: Section[] = [
   },
   {
     id: 'new-year',
-    title: 'New Year Planning (2025)',
+    title: `New Year Planning (${CURRENT_YEAR})`,
     categories: [
       {
         id: 'guiding-principles',

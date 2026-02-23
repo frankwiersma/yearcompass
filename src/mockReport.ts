@@ -1,3 +1,4 @@
+const PAST_YEAR = new Date().getFullYear() - 1;
 export const mockReport = `
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +83,7 @@ export const mockReport = `
 </head>
 <body>
     <div class="section">
-        <h1 class="header">Year 2024 Review & Analysis</h1>
+        <h1 class="header">Year ${PAST_YEAR} Review & Analysis</h1>
         <div class="card">
             <h2>Executive Summary</h2>
             <div class="insight-block">
