@@ -1,4 +1,5 @@
-const PAST_YEAR = new Date().getFullYear() - 1;
+const _month = new Date().getMonth() + 1;
+const PAST_YEAR = _month >= 11 ? new Date().getFullYear() : new Date().getFullYear() - 1;
 export const mockReport = `
 <!DOCTYPE html>
 <html lang="en">

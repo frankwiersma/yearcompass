@@ -1,7 +1,10 @@
 import { Section } from '../types';
 
-const CURRENT_YEAR = new Date().getFullYear();
-const PAST_YEAR = CURRENT_YEAR - 1;
+const now = new Date();
+const month = now.getMonth() + 1;
+const CURRENT_YEAR = now.getFullYear();
+const PAST_YEAR = month >= 11 ? CURRENT_YEAR : CURRENT_YEAR - 1;
+const NEXT_YEAR = PAST_YEAR + 1;
 
 export const sectionsNL: Section[] = [
   {
@@ -280,7 +283,7 @@ export const sectionsNL: Section[] = [
   },
   {
     id: 'nieuw-jaar',
-    title: `Nieuwjaarsplanning (${CURRENT_YEAR})`,
+    title: `Nieuwjaarsplanning (${NEXT_YEAR})`,
     categories: [
       {
         id: 'leidende-principes',
